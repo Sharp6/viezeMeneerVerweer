@@ -23,7 +23,7 @@ class Menu():
 		self.loadImages()
 
 		self.tickOfLastCommand = 0
-		self.commandInterval = 300
+		self.commandInterval = 1000
 
 	def enter(self):
 		print "Entering MENU state."
@@ -34,7 +34,7 @@ class Menu():
 	def update(self,ticks):
 		buttonState = self.input.getButtonState()
 		position = self.input.getPosition()
-		if(abs(position)>50):
+		if(abs(position)>15):
 			if(ticks - self.tickOfLastCommand > self.commandInterval):
 				self.tickOfLastCommand = ticks
 				if position < 0:
@@ -60,17 +60,17 @@ class Menu():
 		labelText = self.font.render(str(label), 1, (10, 10, 10))
 		labelPos = labelText.get_rect()
 		labelPos.centerx = self.menuPosX
-		labelPos.centery = self.menuPosY + self.labels.index(label) * self.menuSpacing
+		labelPos.centery = self.menuPosY + self.menuItemLabels.index(label) * self.menuSpacing
 		self.surface.blit(labelText,labelPos)
 
 	def drawSelectionBox(self,label):
 		self.pygame.draw.rect(self.surface,(10,250,10),(self.windowWidth/2-self.selectionBoxWidth/2,self.menuPosY + label * self.menuSpacing - 5, self.selectionBoxWidth,self.selectionBoxHeight))
 
-	def increaseSelection():
+	def increaseSelection(self):
 		self.currentMenuItem = self.currentMenuItem + 1
 		self.currentMenuItem = self.currentMenuItem % len(self.menuItemLabels)
 
-	def decreaseSelection():
+	def decreaseSelection(self):
 		self.currentMenuItem = self.currentMenuItem - 1
 		if self.currentMenuItem < 0:
-			self.currentMenuItem = len(sel.menuItemLabels) - 1
+			self.currentMenuItem = len(self.menuItemLabels) - 1
