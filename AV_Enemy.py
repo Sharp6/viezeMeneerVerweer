@@ -13,6 +13,15 @@ class Enemy(GameObject):
 		self.setInitialPosition()
 
 		self.speed = 3
+		self.strategies = [ "SINUS", "STRAIGHT" ]
+		self.strategy = None
+		self.angle = None
+
+		self.setStrategy()
+
+		self.font = self.pygame.font.Font("assets/christmasFont.ttf", 20)
+		
+
 		self.fallSpeed = 9
 		self.isHit = False
 
@@ -21,8 +30,18 @@ class Enemy(GameObject):
 		
 	def setInitialPosition(self):
 		self.x -= self.width / 2
+
+	def setStrategy(self):
+		self.strategy = self.strategies[random.randint(0,len(self.strategies))]
+		self.angle = random.randint(-3,3)
+
+	def updateStrategyText(self):
+		self.strategyText = self.font.render(str(self.strategy) + " " + str(self.angle), 1, (10, 10, 10))
+		self.strategyTextPos = self.strategyText.get_rect()
+		self.strategyTextPos.centerx = self.y - self.height/2
 	
 	def update(self,ticks):
+		self.updateStrategyText()
 		if self.isHit:
 			if self.y > self.windowHeight + self.height:
 				if (self.landingAnimation is None):
@@ -33,13 +52,20 @@ class Enemy(GameObject):
 						self.basey = random.randint(0,self.windowHeight)
 						self.landingAnimation = None
 						self.isHit = False
+						self.setStrategy()
 			else:
 				self.y += self.fallSpeed
 				self.broom.update(ticks)
 		else:
 			self.broom = None
 			self.x -= self.speed
-			self.y = self.basey + math.sin(self.x * 1.0 / 30) * 100
+
+			if self.strategy == "SINUS":
+				self.y = self.basey + math.sin(self.x * 1.0 / 30) * 100
+			elif self.strategy == "STRAIGHT":
+				self.y = self.basey + self.angle
+			else:
+				self.y = self.basey
 
 			if self.x < -self.width:
 				self.x = self.beginX
@@ -48,6 +74,7 @@ class Enemy(GameObject):
 				return False
 
 	def draw(self):
+		self.surface.blit(self.strategyText, self.strategyTextPos)
 		if self.isHit:
 			self.surface.blit(self.fallingImage, (self.x, self.y))
 			self.broom.draw()
