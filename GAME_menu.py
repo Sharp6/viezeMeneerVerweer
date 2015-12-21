@@ -51,17 +51,17 @@ class Menu():
 				else:
 					self.increaseSelection()
 		if buttonState:
-			if currentMenuItem == 2:
+			if self.currentMenuItem == 2:
 				self.fsm.changeState(self.nextState)
-			elif currentMenuItem == 0:
+			elif self.currentMenuItem == 0:
 				self.changePlayer()
-			elif currentMenuItem == 1:
+			elif self.currentMenuItem == 1:
 				self.changeDifficulty()
 
 	def draw(self):
 		self.surface.blit(self.background, (0,0))
 		self.drawSelectionBox(self.currentMenuItem)
-		self.drawLabels()
+		self.drawMenu()
 
 	def loadImages(self):
 		self.background = self.pygame.image.load("assets/menu.png")
@@ -99,13 +99,17 @@ class Menu():
 		playerText = self.font.render(str(self.playerLabels[self.currentPlayer]), 1, self.textColor)
 		playerPos = playerText.get_rect()
 		playerPos.centery = self.menuPosY + self.menuItemLabels.index("Speler") * self.menuSpacing
-		pplayerPos.centerx = self.menuPoxX + self.menuPaddingX
+		playerPos.centerx = self.menuPosX + self.menuPaddingX
+
+		self.surface.blit(playerText,playerPos)
 
 	def drawDifficulty(self):
 		difficultyText = self.font.render(str(self.difficultyLabels[self.currentDifficulty]), 1, self.textColor)
 		difficultyPos = difficultyText.get_rect()
 		difficultyPos.centery = self.menuPosY + self.menuItemLabels.index("Moeilijkheid") * self.menuSpacing
-		difficultyPos.centerx = self.menuPoxX + self.menuPaddingX
+		difficultyPos.centerx = self.menuPosX + self.menuPaddingX
+
+		self.surface.blit(difficultyText,difficultyPos)
 
 	def changePlayer(self):
 		self.currentPlayer = self.currentPlayer+1

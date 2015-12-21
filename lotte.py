@@ -58,7 +58,7 @@ class Manager():
 		self.currentState = newState
 		self.currentState.enter()
 
-	def quitProgam():
+	def quitProgam(self):
 		pygame.quit()
 		sys.exit()
 
