@@ -7,6 +7,7 @@ class Enemy(GameObject):
 	def __init__(self,x,y,pygame,surface,windowHeight,windowWidth):
 		GameObject.__init__(self,x,y,pygame,surface,windowWidth,windowHeight)
 		self.basey = y
+		self.y = y
 		self.beginX = x
 		
 		self.loadImages()
@@ -20,7 +21,10 @@ class Enemy(GameObject):
 		self.setStrategy()
 
 		self.font = self.pygame.font.Font("assets/christmasFont.ttf", 20)
-		
+		self.strategyText = None
+		self.strategyTextPos = None
+
+		self.updateStrategyText()
 
 		self.fallSpeed = 9
 		self.isHit = False
@@ -32,13 +36,28 @@ class Enemy(GameObject):
 		self.x -= self.width / 2
 
 	def setStrategy(self):
-		self.strategy = self.strategies[random.randint(0,len(self.strategies))]
-		self.angle = random.randint(-3,3)
+		#self.strategy = self.strategies[random.randint(0,len(self.strategies)-1)]
+		self.strategy = "STRAIGHT"
+		self.basey = random.randint(0,self.windowHeight)
+		self.angle = random.randint(-2,2)
+		self.y = self.basey
+
+		treshold = 10
+
+		if((self.basey - self.windowHeight / 2) > treshold):
+			if self.angle > 0:
+				self.angle = self.angle * -1
+		elif((self.basey - self.windowHeight / 2) < treshold * -1):
+			if self.angle < 0:
+				self.angle = self.angle * -1
+
+		print "Strategy: " + str(self.strategy) + ", angle: " + str(self.angle) + ", basey: " + str(self.basey)
 
 	def updateStrategyText(self):
 		self.strategyText = self.font.render(str(self.strategy) + " " + str(self.angle), 1, (10, 10, 10))
 		self.strategyTextPos = self.strategyText.get_rect()
-		self.strategyTextPos.centerx = self.y - self.height/2
+		self.strategyTextPos.centerx = self.x - self.width/2
+		self.strategyTextPos.centery = self.y - self.height/2
 	
 	def update(self,ticks):
 		self.updateStrategyText()
@@ -49,7 +68,6 @@ class Enemy(GameObject):
 				else:
 					if(self.landingAnimation.update(ticks)):
 						self.x = self.beginX
-						self.basey = random.randint(0,self.windowHeight)
 						self.landingAnimation = None
 						self.isHit = False
 						self.setStrategy()
@@ -63,7 +81,7 @@ class Enemy(GameObject):
 			if self.strategy == "SINUS":
 				self.y = self.basey + math.sin(self.x * 1.0 / 30) * 100
 			elif self.strategy == "STRAIGHT":
-				self.y = self.basey + self.angle
+				self.y = self.y + self.angle
 			else:
 				self.y = self.basey
 
