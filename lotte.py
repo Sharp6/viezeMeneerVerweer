@@ -5,6 +5,7 @@ import pygame.time as GAME_TIME
 import INPUT_input
 import GAME_viezeMeneerVerweer
 from GAME_menu import Menu
+from GAME_gameOverScreen import GameOver
 
 class Manager():
 
@@ -29,9 +30,11 @@ class Manager():
 
 		self.game = GAME_viezeMeneerVerweer.ViezeMeneerVerweer(self.pygame,self.surface,self.windowWidth,self.windowHeight,self.inputDevice,self)
 		self.menu = Menu(self.pygame,self.surface,self.windowWidth,self.windowHeight,self.inputDevice,self)
+		self.gameOver = GameOver(self.pygame,self.surface,self.windowWidth,self.windowHeight,self.inputDevice,self)
 
 		self.menu.nextState = self.game
-		self.game.nextState = self.menu
+		self.game.nextState = self.gameOver
+		self.gameOver.nextState = self.menu
 
 		self.changeState(self.menu)
 

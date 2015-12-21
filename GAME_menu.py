@@ -25,20 +25,24 @@ class Menu():
 		self.selectionBoxWidth = 300
 		self.selectionBoxHeight = 30
 
-		self.font = self.pygame.font.Font("assets/christmasFont.ttf", 20)
+		self.font = self.pygame.font.Font("assets/font.ttf", 20)
+		self.textColor = (10, 10, 10)
 
 		self.loadImages()
 
 		self.tickOfLastCommand = 0
-		self.commandInterval = 1000
+		self.commandInterval = 700
 
-		self.textColor = (10, 10, 10)
+		
 
 	def enter(self):
 		print "Entering MENU state."
 
 	def exit(self):
 		print "Exiting MENU state."
+		# DIRTY inter-state communication
+		fsm.game.setPlayer(self.playerLabels[self.currentPlayer])
+		fsm.game.setDifficulty(self.currentDifficulty)
 
 	def update(self,ticks):
 		buttonState = self.input.getButtonState()
@@ -51,12 +55,14 @@ class Menu():
 				else:
 					self.increaseSelection()
 		if buttonState:
-			if self.currentMenuItem == 2:
-				self.fsm.changeState(self.nextState)
-			elif self.currentMenuItem == 0:
-				self.changePlayer()
-			elif self.currentMenuItem == 1:
-				self.changeDifficulty()
+			if(ticks - self.tickOfLastCommand > self.commandInterval):
+				self.tickOfLastCommand = ticks
+				if self.currentMenuItem == 2:
+					self.fsm.changeState(self.nextState)
+				elif self.currentMenuItem == 0:
+					self.changePlayer()
+				elif self.currentMenuItem == 1:
+					self.changeDifficulty()
 
 	def draw(self):
 		self.surface.blit(self.background, (0,0))

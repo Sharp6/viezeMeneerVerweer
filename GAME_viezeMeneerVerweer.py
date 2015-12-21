@@ -14,22 +14,31 @@ class ViezeMeneerVerweer():
 		self.fsm = fsm
 		self.nextState = None
 
+		# Player
+		self.player = None
+
+		# Difficulty
+		self.difficulty = None
+
 	def enter(self):
 		print "Entering Vieze Meneer Verweer"
 		# Avatars
-		self.player = AV_Player.Player(0, self.windowHeight / 2, self.pygame, self.surface, self.windowWidth, self.windowHeight)
+		self.player = AV_Player.Player(0, self.windowHeight / 2, self.pygame, self.surface, self.windowWidth, self.windowHeight, self.player)
 		self.enemy = AV_Enemy.Enemy(self.windowWidth, self.windowHeight / 2, self.pygame, self.surface, self.windowHeight, self.windowWidth)
 		self.olivia = AV_Olivia.Olivia(self.windowWidth, 10, self.pygame, self.surface, self.windowHeight, self.windowWidth)
 
 		# Score
 		self.score = 0
-		self.font = self.pygame.font.Font("assets/christmasFont.ttf", 36)
+		self.font = self.pygame.font.Font("assets/font.ttf", 36)
 		self.scoreText = self.font.render(str(self.score), 1, (10, 10, 10))
 		self.scorePos = self.scoreText.get_rect()
 		self.scorePos.centerx = self.windowWidth / 2
 
 		# Decor 
 		self.decor = AV_Decor.Decor(self.pygame,self.surface,self.windowWidth,self.windowHeight)
+
+		# Set difficulty
+		self.enemy.speed = self.difficulty + 2
 
 	def exit(self):
 		print "Exit Vieze Meneer Verweer"
@@ -70,5 +79,11 @@ class ViezeMeneerVerweer():
 		self.olivia.draw()
 		self.enemy.draw()
 		self.player.draw()
+
+	def setPlayer(self,player):
+		self.player = player
+
+	def setDifficulty(self,difficulty):
+		self.difficulty = difficulty
 
 	

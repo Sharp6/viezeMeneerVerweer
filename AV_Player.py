@@ -2,18 +2,24 @@ from AV_GameObject import GameObject
 from AV_Bullet import Bullet
 
 class Player(GameObject):
-	def __init__(self,x,y,pygame,surface,windowWidth,windowHeight):
+	def __init__(self,x,y,pygame,surface,windowWidth,windowHeight,player):
 		GameObject.__init__(self,x,y,pygame,surface,windowWidth,windowHeight)
 
 		self.firing = False
 		self.bullets = []
 		self.bulletSpeed = 10
 
+		self.player = player
+
 		self.yOffset = y
 		self.offsetTimer = 400
 		self.lastOffsetChange = 0
 		self.offset = 0
 		self.offsetRange = 5
+
+		self.image = None
+		self.width = None
+		self.height = None
 
 		self.loadImages()
 		self.setInitialPosition()
@@ -23,7 +29,10 @@ class Player(GameObject):
 		self.y -= self.height / 2
 
 	def loadImages(self):
-		self.image = self.pygame.image.load("assets/player_marie.png")
+		if self.player == "MARIE":
+			self.image = self.pygame.image.load("assets/player_marie.png")
+		else:
+			self.image = self.pygame.image.load("assets/player_lotte.png")
 		dimensions = self.image.get_rect().size
 		self.width  = dimensions[0]
 		self.height = dimensions[1]

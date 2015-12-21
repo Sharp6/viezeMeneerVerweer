@@ -169,16 +169,10 @@ class Landing(GameObject):
 class Broom(GameObject):
 	def __init__(self,x,y,pygame,surface,windowHeight,windowWidth):
 		GameObject.__init__(self,x,y,pygame,surface,windowWidth,windowHeight)
-		self.x = x
-		self.y = y
-		self.pygame = pygame
-		self.surface = surface
-		self.windowHeight = windowHeight
-		self.windowWidth = windowWidth
-
+		
 		self.loadImages()
 		
-		self.xSpeed = 3
+		self.xSpeed = random.randint(-2,4)
 		self.ySpeed = 9
 
 	def update(self,ticks):
