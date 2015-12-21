@@ -36,8 +36,8 @@ class Enemy(GameObject):
 		self.x -= self.width / 2
 
 	def setStrategy(self):
-		#self.strategy = self.strategies[random.randint(0,len(self.strategies)-1)]
-		self.strategy = "STRAIGHT"
+		self.strategy = self.strategies[random.randint(0,len(self.strategies)-1)]
+		#self.strategy = "STRAIGHT"
 		self.basey = random.randint(0,self.windowHeight)
 		self.angle = random.randint(-2,2)
 		self.y = self.basey
