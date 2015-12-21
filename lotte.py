@@ -2,117 +2,70 @@ import pygame, sys, random, math
 import pygame.locals as GAME_GLOBALS
 import pygame.event as GAME_EVENTS
 import pygame.time as GAME_TIME
-import avatars
-import inputs
+import INPUT_input
+import GAME_viezeMeneerVerweer
+from GAME_menu import Menu
 
-windowWidth = 800
-windowHeight = 480
+class Manager():
 
-pygame.init()
-pygame.font.init()
-surface = pygame.display.set_mode((windowWidth,windowHeight))
+	def __init__(self):
+		self.pygame = pygame
 
-pygame.display.set_caption('Lotte en Marie')
-textFont = pygame.font.SysFont("monospace", 50)
+		self.windowWidth = 800
+		self.windowHeight = 480
+		self.inputDevice = INPUT_input.Input(self.pygame,"mouse",self.windowWidth,self.windowHeight)
 
-gameStarted = False
-gameOver = False
-gameStartedTime = 0
-gameFinishedTime = 0
+		self.pygame.init()
+		self.pygame.font.init()
+		self.surface = self.pygame.display.set_mode((self.windowWidth,self.windowHeight))
+		#pygame.mixer.init()
 
-# Mouse variables
-mousePosition = (0,0)
-mouseStates = None
-mouseDown = False
+		self.clock = self.pygame.time.Clock()
 
-#GPIO
-gpioButtonState = None
-gpioButtonDown = False
-joystick = inputs.joystick()
+		#pygame.display.set_caption('Lotte en Marie')
+		#textFont = pygame.font.SysFont("monospace", 50)
 
-# Avatars
-player = avatars.Player(0, windowHeight / 2, pygame, surface, windowWidth)
-enemy = avatars.Enemy(windowWidth, windowHeight / 2, pygame, surface, windowHeight)
+		self.currentState = None
 
-# Clouds
-clouds = []
-lastCloudCreated = 0
-cloudInterval = 2000
+		self.game = GAME_viezeMeneerVerweer.ViezeMeneerVerweer(self.pygame,self.surface,self.windowWidth,self.windowHeight,self.inputDevice,self)
+		self.menu = Menu(self.pygame,self.surface,self.windowWidth,self.windowHeight,self.inputDevice,self)
 
-#pygame.mixer.init()
+		self.menu.nextState = self.game
+		self.game.nextState = self.menu
 
-def updateGame():
-	global mouseDown, gpioButtonDown, gpioButtonState, gameOver
-	gpioButtonState = joystick.checkA()
+		self.changeState(self.menu)
 
-	if gpioButtonState and gpioButtonDown is False:
-		player.fire()
-		gpioButtonDown = True
-	elif not(gpioButtonState) and gpioButtonDown is True:
-		gpioButtonDown = False
+	def update(self,ticks):
+		if (self.currentState != None):
+			self.currentState.update(ticks)
+			self.currentState.draw()
 
-	if mouseStates[0] is 1 and mouseDown is False:
-		player.fire()
-		mouseDown = True
-	elif mouseStates[0] is 0 and mouseDown is True:
-		mouseDown = False
+		for event in GAME_EVENTS.get():
+			if event.type == pygame.KEYDOWN:
+				if event.key == pygame.K_ESCAPE:
+					self.quitProgam()
 
-	#player.setPosition(mousePosition)
-	player.moveY(joystick.checkY() / 10)
-	enemy.move()
-	player.checkForHit(enemy)
-	addClouds()
-	updateClouds()
+			if event.type == GAME_GLOBALS.QUIT:
+				self.quitProgam()
 
-def addClouds():
-	global lastCloudCreated
+		self.pygame.display.update()
+		self.clock.tick(40)
 
-	if GAME_TIME.get_ticks() - lastCloudCreated > cloudInterval:
-		clouds.append(avatars.Cloud(windowWidth, random.randint(0,windowHeight), random.randint(1,3), pygame, surface))
-		lastCloudCreated = GAME_TIME.get_ticks()
+	def changeState(self, newState):
+		if(self.currentState != None):
+			self.currentState.exit()
 
-def updateClouds():
-	for idx, cloud in enumerate(clouds):
-		if cloud.x > 0 - cloud.width:
-			cloud.move()
-		else:
-			del clouds[idx]
+		self.currentState = newState
+		self.currentState.enter()
 
-def drawGame(ticks):
-	#surface.blit(background, (0,0))
-	surface.fill((200,200,250))
-	for cloud in clouds:
-		cloud.draw()
-	enemy.draw()
-	player.draw(ticks)
+	def quitProgam():
+		pygame.quit()
+		sys.exit()
 
-def quitGame():
-	pygame.quit()
-	sys.exit()
+if __name__ == "__main__":
+	manager = Manager()
 
-while True:
-	timeTick = GAME_TIME.get_ticks()
-	mousePosition = pygame.mouse.get_pos()
-	mouseStates = pygame.mouse.get_pressed()
+	while True:
+		manager.update(GAME_TIME.get_ticks())
 
-	if gameStarted is True and gameOver is False:
-		updateGame()
-		drawGame(timeTick)
-
-	elif gameStarted is False:
-		# draw startscreen
-		gameStarted = True
-
-	elif gameStarted is True and gameOver is True:
-		# draw gameover screen
-		gameStarted = False
-
-	for event in GAME_EVENTS.get():
-		if event.type == pygame.KEYDOWN:
-			if event.key == pygame.K_ESCAPE:
-				quitGame()
-
-		if event.type == GAME_GLOBALS.QUIT:
-			quitGame()
-
-	pygame.display.update()
+		

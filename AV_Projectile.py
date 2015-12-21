@@ -1,7 +1,7 @@
 import AV_GameObject
 
 class Bullet(GameObject):
-	def __init__(self, x, y, pygame, surface,windowWidth,windowHeigth,speed):
+	def __init__(self,x,y,pygame,surface,windowWidth,windowHeigth,speed):
 		GameObject.__init__(self,x,y,pygame,surface,windowWidth,windowHeigth)
 		self.x = x
 		self.y = y
@@ -25,7 +25,5 @@ class Bullet(GameObject):
 	def draw(self):
 		self.surface.blit(self.image, (self.x, self.y))
 
-	def move(self):
-		self.x += self.speed
-
-	
+	def update(self, ticks):
+		self.x += self.speed	
