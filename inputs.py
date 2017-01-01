@@ -85,20 +85,26 @@ class joystick():
 			return "5"
 
 	def checkA(self):
-		return GPIO.input(5)
+		return not(GPIO.input(5))
 
 	def checkB(self):
 		return GPIO.input(6)
 
 	def checkX(self):
-                xLinear = round(100000.0 * ((1024.0 / self.readadc(self.horizontal_adc)) - 1.0))
-                xScaled = int(self.scale(xLinear, 98,134000,0,200) + 100)
-                return xScaled
+		readx = self.readadc(self.horizontal_adc)
+		if readx == 0:
+			readx = 1
+		xLinear = round(100000.0 * ((1024.0 / readx) - 1.0))
+		xScaled = int(self.scale(xLinear, 98,134000,0,200) + 100)
+		return xScaled
 
 	def checkY(self):
-                yLinear = round(100000.0 * ((1024.0 / self.readadc(self.vertical_adc)) - 1.0))
-                yScaled = int(abs(self.scale(yLinear,98,138000,0,200)) - 100)
-                return yScaled
+		ready = self.readadc(self.vertical_adc)
+		if ready == 0:
+			ready = 1
+		yLinear = round(100000.0 * ((1024.0 / ready) - 1.0))
+		yScaled = int(abs(self.scale(yLinear,98,138000,0,200)) - 100)
+		return yScaled
 
 	def scale(self,x,in_min,in_max,out_min,out_max):
 		return (x-in_max) * (out_max - out_min) / (in_max - in_min) + out_min

@@ -1,4 +1,4 @@
-#import inputs
+import inputs
 
 class Input():
 	def __init__(self,pygame,type,windowWidth,windowHeight):
@@ -17,7 +17,7 @@ class Input():
 			positionRelative = -((position[1] - self.windowHeight/2) / 10)
 			return positionRelative
 		elif self.type == "gpio":
-			return joystick.checkY()/ 10
+			return self.joystick.checkY()/ 10
 
 	def getButtonState(self):
 		if self.type == "mouse":

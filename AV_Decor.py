@@ -55,3 +55,6 @@ class Cloud(GameObject):
 		dimensions = self.image.get_rect().size
 		self.width  = dimensions[0]
 		self.height = dimensions[1]
+
+		scaleFactor = 4 - self.speed
+		self.image = self.pygame.transform.scale(self.image, (self.width/scaleFactor,self.height/scaleFactor))

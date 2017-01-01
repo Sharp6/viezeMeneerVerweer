@@ -19,6 +19,11 @@ class ViezeMeneerVerweer():
 
 		# Difficulty
 		self.difficulty = None
+		self.previousDifficultyIncrease = 0
+		self.difficultyIncreaseTreshold = 30
+
+		# Music
+		self.loadSounds()
 
 	def enter(self):
 		print "Entering Vieze Meneer Verweer"
@@ -30,7 +35,7 @@ class ViezeMeneerVerweer():
 		# Score
 		self.score = 0
 		self.font = self.pygame.font.Font("assets/font.ttf", 36)
-		self.scoreText = self.font.render(str(self.score), 1, (10, 10, 10))
+		self.scoreText = self.font.render(str(self.score), 1, (33, 149, 255))
 		self.scorePos = self.scoreText.get_rect()
 		self.scorePos.centerx = self.windowWidth / 2
 
@@ -40,8 +45,12 @@ class ViezeMeneerVerweer():
 		# Set difficulty
 		self.enemy.speed = self.difficulty + 2
 
+		self.muziek.play(-1)
+
 	def exit(self):
 		print "Exit Vieze Meneer Verweer"
+		self.fsm.gameOver.setScore(self.score)
+		self.muziek.stop()
 
 	def update(self,ticks):
 		buttonState = self.input.getButtonState()
@@ -67,7 +76,13 @@ class ViezeMeneerVerweer():
 
 	def increaseScore(self, points = 1):
 		self.score = self.score + points
-		self.scoreText = self.font.render(str(self.score), 1, (10, 10, 10))
+		self.scoreText = self.font.render(str(self.score), 1, (33, 149, 255))
+		self.checkDifficulty()
+
+	def checkDifficulty(self):
+		if (self.score - self.previousDifficultyIncrease > self.difficultyIncreaseTreshold):
+			self.enemy.speed = self.enemy.speed + 1
+			self.previousDifficultyIncrease = self.score
 
 	def drawScore(self):
 		self.surface.blit(self.scoreText, self.scorePos)
@@ -85,5 +100,9 @@ class ViezeMeneerVerweer():
 
 	def setDifficulty(self,difficulty):
 		self.difficulty = difficulty
+
+	def loadSounds(self):
+		self.muziek = self.pygame.mixer.Sound('assets/sounds/luchtballon.wav')
+		self.muziek.set_volume(0.3)
 
 	

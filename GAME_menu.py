@@ -10,11 +10,11 @@ class Menu():
 		self.input = inputDevice
 
 		self.menuItemLabels = [ "Speler", "Moeilijkheid", "Start!" ]
-		self.currentMenuItem = 2
+		self.currentMenuItem = 0
 		self.menuPosX = self.windowWidth / 2
 		self.menuPosY = 20
-		self.menuSpacing = 80
-		self.menuPaddingX = 100
+		self.menuSpacing = 100
+		self.menuPaddingY = 30
 
 		self.playerLabels = [ "LOTTE", "MARIE" ]
 		self.currentPlayer = 0
@@ -28,32 +28,34 @@ class Menu():
 		self.font = self.pygame.font.Font("assets/font.ttf", 20)
 		self.textColor = (10, 10, 10)
 
+		self.verhaal = None
+
 		self.loadImages()
+		self.loadSounds()
 
 		self.tickOfLastCommand = 0
 		self.commandInterval = 700
 
-		
-
 	def enter(self):
 		print "Entering MENU state."
+		self.verhaal.play()
 
 	def exit(self):
 		print "Exiting MENU state."
 		# DIRTY inter-state communication
-		fsm.game.setPlayer(self.playerLabels[self.currentPlayer])
-		fsm.game.setDifficulty(self.currentDifficulty)
+		self.fsm.game.setPlayer(self.playerLabels[self.currentPlayer])
+		self.fsm.game.setDifficulty(self.currentDifficulty)
 
 	def update(self,ticks):
 		buttonState = self.input.getButtonState()
 		position = self.input.getPosition()
-		if(abs(position)>15):
+		if(abs(position)>5):
 			if(ticks - self.tickOfLastCommand > self.commandInterval):
 				self.tickOfLastCommand = ticks
 				if position < 0:
-					self.decreaseSelection()
-				else:
 					self.increaseSelection()
+				else:
+					self.decreaseSelection()
 		if buttonState:
 			if(ticks - self.tickOfLastCommand > self.commandInterval):
 				self.tickOfLastCommand = ticks
@@ -71,6 +73,9 @@ class Menu():
 
 	def loadImages(self):
 		self.background = self.pygame.image.load("assets/menu.png")
+
+	def loadSounds(self):
+		self.verhaal = self.pygame.mixer.Sound('assets/sounds/intro.wav')
 
 	def drawMenu(self):
 		self.drawLabels()
@@ -90,7 +95,7 @@ class Menu():
 		self.surface.blit(labelText,labelPos)
 
 	def drawSelectionBox(self,label):
-		self.pygame.draw.rect(self.surface,(10,250,10),(self.windowWidth/2-self.selectionBoxWidth/2,self.menuPosY + label * self.menuSpacing - 5, self.selectionBoxWidth,self.selectionBoxHeight))
+		self.pygame.draw.rect(self.surface,(33, 149, 255),(self.windowWidth/2-self.selectionBoxWidth/2,self.menuPosY + label * self.menuSpacing - (self.selectionBoxHeight/2), self.selectionBoxWidth,self.selectionBoxHeight))
 
 	def increaseSelection(self):
 		self.currentMenuItem = self.currentMenuItem + 1
@@ -102,18 +107,18 @@ class Menu():
 			self.currentMenuItem = len(self.menuItemLabels) - 1
 
 	def drawPlayer(self):
-		playerText = self.font.render(str(self.playerLabels[self.currentPlayer]), 1, self.textColor)
+		playerText = self.font.render(str(self.playerLabels[self.currentPlayer]), 1, (33, 149, 255))
 		playerPos = playerText.get_rect()
-		playerPos.centery = self.menuPosY + self.menuItemLabels.index("Speler") * self.menuSpacing
-		playerPos.centerx = self.menuPosX + self.menuPaddingX
+		playerPos.centery = self.menuPosY + self.menuItemLabels.index("Speler") * self.menuSpacing + self.menuPaddingY
+		playerPos.centerx = self.menuPosX
 
 		self.surface.blit(playerText,playerPos)
 
 	def drawDifficulty(self):
-		difficultyText = self.font.render(str(self.difficultyLabels[self.currentDifficulty]), 1, self.textColor)
+		difficultyText = self.font.render(str(self.difficultyLabels[self.currentDifficulty]), 1, (33, 149, 255))
 		difficultyPos = difficultyText.get_rect()
-		difficultyPos.centery = self.menuPosY + self.menuItemLabels.index("Moeilijkheid") * self.menuSpacing
-		difficultyPos.centerx = self.menuPosX + self.menuPaddingX
+		difficultyPos.centery = self.menuPosY + self.menuItemLabels.index("Moeilijkheid") * self.menuSpacing + self.menuPaddingY
+		difficultyPos.centerx = self.menuPosX
 
 		self.surface.blit(difficultyText,difficultyPos)
 

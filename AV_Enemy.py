@@ -11,20 +11,19 @@ class Enemy(GameObject):
 		self.beginX = x
 		
 		self.loadImages()
+		self.loadSounds()
 		self.setInitialPosition()
 
 		self.speed = 3
-		self.strategies = [ "SINUS", "STRAIGHT" ]
+		self.strategies = [ "SINUS", "STRAIGHT", "SINUSSTRAIGHT" ]
 		self.strategy = None
 		self.angle = None
 
 		self.setStrategy()
 
-		self.font = self.pygame.font.Font("assets/christmasFont.ttf", 20)
-		self.strategyText = None
-		self.strategyTextPos = None
-
-		self.updateStrategyText()
+		#self.font = self.pygame.font.Font("assets/christmasFont.ttf", 20)
+		#self.strategyText = None
+		#self.strategyTextPos = None
 
 		self.fallSpeed = 9
 		self.isHit = False
@@ -37,19 +36,18 @@ class Enemy(GameObject):
 
 	def setStrategy(self):
 		self.strategy = self.strategies[random.randint(0,len(self.strategies)-1)]
-		#self.strategy = "STRAIGHT"
-		self.basey = random.randint(0,self.windowHeight)
-		self.angle = random.randint(-2,2)
+		self.basey = random.randint(0,self.windowHeight / 4)
+		self.angle = random.randint(0,2)
+		self.direction = random.randint(0,1)
+
+		if self.direction == 0:
+			self.basey = self.windowHeight - self.width - self.basey
+			self.angle = self.angle * -1
+		else:
+			self.basey = self.basey
+			self.angle = self.angle
+
 		self.y = self.basey
-
-		treshold = 10
-
-		if((self.basey - self.windowHeight / 2) > treshold):
-			if self.angle > 0:
-				self.angle = self.angle * -1
-		elif((self.basey - self.windowHeight / 2) < treshold * -1):
-			if self.angle < 0:
-				self.angle = self.angle * -1
 
 		print "Strategy: " + str(self.strategy) + ", angle: " + str(self.angle) + ", basey: " + str(self.basey)
 
@@ -60,7 +58,7 @@ class Enemy(GameObject):
 		self.strategyTextPos.centery = self.y - self.height/2
 	
 	def update(self,ticks):
-		self.updateStrategyText()
+		#self.updateStrategyText()
 		if self.isHit:
 			if self.y > self.windowHeight + self.height:
 				if (self.landingAnimation is None):
@@ -82,6 +80,12 @@ class Enemy(GameObject):
 				self.y = self.basey + math.sin(self.x * 1.0 / 30) * 100
 			elif self.strategy == "STRAIGHT":
 				self.y = self.y + self.angle
+				if (self.y < 0) or (self.y > self.windowHeight - self.height):
+					self.angle = self.angle * (-1)
+			elif self.strategy == "SINUSSTRAIGHT":
+				self.y = self.y + math.sin(self.x * 1.0 / 30) * 9
+				if (self.y < 0) or (self.y > self.windowHeight - self.height):
+					self.angle = self.angle * (-1)
 			else:
 				self.y = self.basey
 
@@ -92,7 +96,7 @@ class Enemy(GameObject):
 				return False
 
 	def draw(self):
-		self.surface.blit(self.strategyText, self.strategyTextPos)
+		#self.surface.blit(self.strategyText, self.strategyTextPos)
 		if self.isHit:
 			self.surface.blit(self.fallingImage, (self.x, self.y))
 			self.broom.draw()
@@ -108,9 +112,18 @@ class Enemy(GameObject):
 		self.width  = dimensions[0]
 		self.height = dimensions[1]
 
+	def loadSounds(self):
+		geraakt1 = self.pygame.mixer.Sound('assets/sounds/vm_aaaah.wav')
+		geraakt2 = self.pygame.mixer.Sound('assets/sounds/vm_potjandorie.wav')
+		geraakt3 = self.pygame.mixer.Sound('assets/sounds/vm_sapperdepietjes.wav')
+
+		self.geraaktSounds = [ geraakt1, geraakt2, geraakt3 ]
+
 	def registerHit(self):
 		if not self.isHit:
 			self.broom = Broom(self.x,self.y,self.pygame,self.surface,self.windowHeight,self.windowWidth)
+			if(random.randint(0,5) > 3):
+				self.geraaktSounds[random.randint(0,len(self.geraaktSounds)-1)].play()
 		self.isHit = True
 
 class Landing(GameObject):

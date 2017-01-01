@@ -14,12 +14,13 @@ class Manager():
 
 		self.windowWidth = 800
 		self.windowHeight = 480
-		self.inputDevice = INPUT_input.Input(self.pygame,"mouse",self.windowWidth,self.windowHeight)
+		self.inputDevice = INPUT_input.Input(self.pygame,"gpio",self.windowWidth,self.windowHeight)
 
 		self.pygame.init()
 		self.pygame.font.init()
 		self.surface = self.pygame.display.set_mode((self.windowWidth,self.windowHeight))
-		#pygame.mixer.init()
+		self.pygame.mixer.init()
+		self.pygame.mouse.set_visible(False)
 
 		self.clock = self.pygame.time.Clock()
 
@@ -62,6 +63,7 @@ class Manager():
 		self.currentState.enter()
 
 	def quitProgam(self):
+		pygame.mixer.quit()
 		pygame.quit()
 		sys.exit()
 

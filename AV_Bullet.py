@@ -13,10 +13,11 @@ class Bullet(GameObject):
 		self.y += self.height / 2
 
 	def loadImages(self):
-		self.image = self.pygame.image.load("assets/christmas.png")
+		self.image = self.pygame.image.load("assets/apple.png")
 		dimensions = self.image.get_rect().size
-		self.width = dimensions[0]
-		self.height = dimensions[1]
+		self.width = dimensions[0] / 5
+		self.height = dimensions[1] / 5
+		self.image = self.pygame.transform.scale(self.image, (self.width,self.height))
 
 	def draw(self):
 		self.surface.blit(self.image, (self.x, self.y))

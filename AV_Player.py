@@ -22,6 +22,7 @@ class Player(GameObject):
 		self.height = None
 
 		self.loadImages()
+		self.loadSounds()
 		self.setInitialPosition()
 
 	def setInitialPosition(self):
@@ -36,6 +37,9 @@ class Player(GameObject):
 		dimensions = self.image.get_rect().size
 		self.width  = dimensions[0]
 		self.height = dimensions[1]
+
+	def loadSounds(self):
+		self.laser = self.pygame.mixer.Sound('assets/sounds/laser.wav')
 
 	def update(self,ticks):
 		if ticks - self.lastOffsetChange > self.offsetTimer:
@@ -88,3 +92,4 @@ class Player(GameObject):
 	def fire(self):
 		if len(self.bullets) < 3:
 			self.bullets.append(Bullet(self.x + self.width / 2, self.y, self.pygame, self.surface, self.windowWidth, self.windowHeight,self.bulletSpeed))			
+			#self.laser.play()
